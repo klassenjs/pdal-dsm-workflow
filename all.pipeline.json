@@ -1,0 +1,90 @@
+{
+    "comments": [
+        "Read in the data",
+        "Move Key-Points into Ground Class",
+        "Remove unclassified, noise, and water points",
+        "Write DSM raster",
+        "Calculate Height above Ground",
+        "Write nDSM raster",
+        "Write nDSM point cloud",
+        "Write DEM raster",
+        "TODO: buffer input tile, clip output to orig tile size"
+    ],
+    "pipeline": [
+        {
+            "type": "readers.las",
+            "filename": "/srv/data/mn_lidar/laz/4342-08-28_b.laz"
+        },
+        {
+            "type": "filters.assign",
+            "assignment": "Classification[8:8]=2"
+        },
+        {
+            "type": "filters.range",
+            "limits": "Classification![1:1]"
+        },
+        {
+            "type": "filters.range",
+            "limits": "Classification![7:7]"
+        },
+        {
+            "type": "filters.range",
+            "limits": "Classification![9:9]"
+        },
+        {
+            "tag": "dsm_writer",
+            "type": "writers.gdal",
+            "resolution": 0.5,
+            "window_size": 0,
+            "output_type": "max,count,stdev",
+            "dimension": "Z",
+            "filename": "4342-08-28_b.dsm.tif",
+            "gdalopts": "COMPRESS=LZW,BIGTIFF=YES",
+            "data_type": "float",
+            "nodata": -9999
+        },
+        {
+            "type": "filters.hag",
+            "delaunay": true
+        },
+        {
+            "tag": "ndsm_writer",
+            "type": "writers.gdal",
+            "resolution": 0.5,
+            "window_size": 0,
+            "output_type": "max,count,stdev",
+            "dimension": "HeightAboveGround",
+            "filename": "4342-08-28_b.ndsm.tif",
+            "gdalopts": "COMPRESS=LZW,BIGTIFF=YES",
+            "data_type": "float",
+            "nodata": -9999
+        },
+        {
+            "type": "filters.ferry",
+            "dimensions": "Z=>OrigZ, HeightAboveGround=>Z"
+        },
+        {
+            "tag": "agl_writer",
+            "type": "writers.las",
+            "forward": "all",
+            "filename": "4342-08-28_b.agl.laz"
+        },
+        {
+            "type": "filters.range",
+            "limits": "Classification[2:2]"
+        },
+        {
+            "tag": "dem_writer",
+            "type": "writers.gdal",
+            "resolution": 0.5,
+            "window_size": 0,
+            "output_type": "idw,count,stdev",
+            "dimension": "OrigZ",
+            "filename": "4342-08-28_b.dem.tif",
+            "gdalopts": "COMPRESS=LZW,BIGTIFF=YES",
+            "data_type": "float",
+            "nodata": -9999
+        }
+
+    ]
+}

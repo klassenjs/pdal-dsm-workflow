@@ -1,0 +1,69 @@
+{
+    "pipeline": [
+        {
+            "type": "readers.las",
+            "filename": "/srv/data/mn_lidar/laz/4342-08-28_b.laz"
+        },
+        {
+            "type":"filters.assign",
+            "assignment":"Classification[:]=0"
+        },
+        {
+            "type": "filters.outlier",
+            "method": "statistical",
+            "min_k": 2,
+            "mean_k": 8,
+            "multiplier": 2.0,
+            "class": 7
+        },
+        {
+            "type": "filters.elm",
+            "class": 7
+        },
+        {
+            "type": "filters.range",
+            "limits": "Classification![7:7]"
+        },
+        {
+            "type":"filters.smrf",
+            "ignore":"Classification[7:7]",
+            "returns":"last,only",
+            "slope":0.2,
+            "window":16,
+            "threshold":0.45,
+            "scalar":1.2
+        },
+        {
+            "type": "filters.approximatecoplanar"
+        },
+        {
+            "type": "filters.estimaterank",
+            "knn": 16
+        },
+        {
+            "type": "filters.hag"
+        },
+        {
+            "type": "filters.python",
+            "script": "reclassify.pipeline.py",
+            "module": "anything",
+            "function": "reclassify_bldg"
+        },
+        {
+            "type": "filters.neighborclassifier",
+            "domain": "Classification[1:1]",
+            "k": 10
+        },
+        {
+            "type": "filters.python",
+            "script": "reclassify.pipeline.py",
+            "module": "anything",
+            "function": "reclassify_veg"
+        },
+		{
+			"type": "writers.las",
+			"filename": "out.laz",
+			"forward": "all"
+		}
+    ]
+}
