@@ -70,7 +70,14 @@
         {
             "tag": "agl_writer",
             "type": "writers.las",
-            "forward": "all",
+            "scale_x": "0.01",
+            "scale_y": "0.01",
+            "scale_z": "0.01",
+            "offset_x": "auto",
+            "offset_y": "auto",
+            "offset_z": "auto",
+            "minor_version": 4,
+            "dataformat_id": 1,
             "filename": "4342-08-28_b.agl.laz"
         },
         {
