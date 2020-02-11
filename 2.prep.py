@@ -29,7 +29,7 @@ for geocell in geocell_lyr:
 
 	# Find Input DEMs within this geocell
 	geocell_has_data = False
-	
+
 	tidx_lyr.ResetReading()
 	tidx_lyr.SetSpatialFilter(geocell_geom)
 	for t in tidx_lyr:
@@ -42,15 +42,14 @@ for geocell in geocell_lyr:
 	# Setup job parameters
 	tindex_name = './src/Elevation/Statewide_Low_Density_Lidar.gpkg'
 	bounds_i = '([{0:6.0f},{1:6.0f}],[{2:7.0f},{3:7.0f}])'.format(geocell_env[0]-100,geocell_env[1]+100,geocell_env[2]-100,geocell_env[3]+100)
-	bounds_o = '([{0:6.0f},{1:6.0f}],[{2:7.0f},{3:7.0f}])'.format(geocell_env[0],geocell_env[1],geocell_env[2],geocell_env[3])
-	output_bn = './dest' + geocell_name
+	bounds_o = '([{0:6.0f},{1:6.0f}],[{2:7.0f},{3:7.0f}])'.format(geocell_env[0],geocell_env[1]-3,geocell_env[2],geocell_env[3]-3)
+	output_bn = './results.2/' + geocell_name
 
 	already_done = os.path.exists(output_bn+'.done')
 	if (geocell_has_data and not already_done):
-			subprocess.run(["sbatch",
-							"-J", geocell_name,
-							"-o", output_bn+'.log',
-							"./run-chm.sh", tindex_name, output_bn, bounds_i, bounds_o
-			])
-
+		subprocess.run(["sbatch",
+						"-J", geocell_name,
+						"-o", output_bn+'.log',
+						"./run-chm.sh", tindex_name, output_bn, bounds_i, bounds_o
+		])
 # end for

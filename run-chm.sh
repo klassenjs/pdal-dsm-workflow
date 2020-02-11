@@ -1,6 +1,8 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=5000
+##SBATCH --mem=5750
+##SBATCH --mem=11500
+#SBATCH --mem=23000
 #SBATCH --open-mode=append
 
 set -euxo pipefail
@@ -38,6 +40,7 @@ if [ ! -f "${res_bn}".done ] ; then
 			 --stage.dem_writer.filename="${res_bn}".dem.tif \
 			 --stage.agl_writer.filename="${res_bn}".agl.laz
 
+		echo $(date) $(hostname) $src_name $bounds_o Done.
 		touch "${res_bn}".done
 else
 		echo "Already finished."

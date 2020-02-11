@@ -25,15 +25,23 @@
         },
         {
             "type": "filters.range",
-            "limits": "Classification![1:1]"
-        },
-        {
-            "type": "filters.range",
             "limits": "Classification![7:7]"
         },
         {
             "type": "filters.range",
-            "limits": "Classification![9:9]"
+            "limits": "Classification![9:12]"
+        },
+        {
+            "type": "filters.range",
+            "limits": "Classification![17:17]"
+        },
+        {
+            "type": "filters.hag",
+            "delaunay": true
+        },
+        {
+            "type": "filters.range",
+            "limits": "HeightAboveGround[-120:120]"
         },
         {
             "tag": "dsm_writer",
@@ -46,10 +54,6 @@
             "gdalopts": "COMPRESS=LZW,BIGTIFF=YES",
             "data_type": "float",
             "nodata": -9999
-        },
-        {
-            "type": "filters.hag",
-            "delaunay": true
         },
         {
             "tag": "ndsm_writer",
