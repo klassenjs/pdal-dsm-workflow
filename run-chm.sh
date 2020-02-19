@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --cpus-per-task=1
-##SBATCH --mem=5750
+#SBATCH --mem=5750
 ##SBATCH --mem=11500
-#SBATCH --mem=23000
+##SBATCH --mem=23000
 #SBATCH --open-mode=append
 
 set -euxo pipefail
@@ -11,6 +11,7 @@ src_name="$1"
 res_bn="$2"
 bounds_i="$3"
 bounds_o="$4"
+RESOLUTION="$5"
 
 if [ ! -f "${res_bn}".done ] ; then
 
@@ -19,8 +20,6 @@ if [ ! -f "${res_bn}".done ] ; then
 		echo $(date) $(hostname) $src_name $bounds_o
 
 		mkdir -p "${res_dir}"
-
-		RESOLUTION=3
 
 		echo Using resolution: "${RESOLUTION}"
 

@@ -1,0 +1,21 @@
+{
+    "pipeline": [
+        {
+            "type": "readers.ept",
+            "filename": "http://localhost:8000/html/pointclouds/mn_agl/ept.json",
+            "bounds": "([329297,347531], [5341183,5356405])"
+        },
+        {
+            "tag": "dsm_writer",
+            "type": "writers.gdal",
+            "resolution": 1,
+            "window_size": 0,
+            "output_type": "count",
+            "dimension": "Z",
+            "filename": "count.tif",
+            "gdalopts": "COMPRESS=LZW,BIGTIFF=YES",
+            "data_type": "float",
+            "nodata": -9999
+        }
+    ]
+}
