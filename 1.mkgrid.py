@@ -28,13 +28,21 @@ geocell_ds = ogr.Open('./grid.gpkg', 1)
 geocell_lyr = geocell_ds.GetLayer('grid')
 geocell_defn = geocell_lyr.GetLayerDefn()
 
-need_1k_grid = []
-with open("need-1k-grid") as file:
+need_1500m_grid = []
+with open("need-1500m-grid") as file:
 	for line in file:
 		[x, y] = line.split('_')
 		x = int(x)
 		y = int(y)
-		need_1k_grid.append([x,y])
+		need_1500m_grid.append([x,y])
+
+need_750m_grid = []
+with open("need-750m-grid") as file:
+	for line in file:
+		[x, y] = line.split('_')
+		x = int(x)
+		y = int(y)
+		need_750m_grid.append([x,y])
 
 
 no_ground_points = []
@@ -45,7 +53,7 @@ with open("no-ground-points") as file:
 		y = int(y)
 		no_ground_points.append([x,y])
 
-def make_1k_grid(minx, miny, grid_step):
+def split_grid(minx, miny, grid_step):
 	#grid_step = 750
 	for dx in range(0, 3000, grid_step):
 			for dy in range(0, 3000, grid_step):
@@ -64,7 +72,7 @@ def make_1k_grid(minx, miny, grid_step):
 				geocell_lyr.CreateFeature(feat)
 
 deleteFIDS = []
-split1k = []
+splitGrid = []
 for geocell in geocell_lyr:
 	geocell_geom = geocell.GetGeometryRef()
 	geocell_env = geocell_geom.GetEnvelope()
@@ -74,7 +82,7 @@ for geocell in geocell_lyr:
 
 	# Find if this geocell contains any input data
 	geocell_has_data = False
-	geocell_split_1k = 0
+	geocell_split = 0
 
 	tidx_lyr.ResetReading()
 	tidx_lyr.SetSpatialFilter(geocell_geom)
@@ -82,25 +90,31 @@ for geocell in geocell_lyr:
 		location = t.GetField('location')
 		if (len(location) >= 78):
 			# len(location) >= 78 selects the mid res metro tiles
-			geocell_split_1k = 1500
+			geocell_split = 1500
 		if (len(location) >= 80):
 			# len(location) >= 80 selects the high res metro tiles
-			geocell_split_1k = 750
+			geocell_split = 750
 		geocell_has_data = True
 
-	for [x, y] in need_1k_grid:
+	for [x, y] in need_1500m_grid:
 		if (x == geocell_east and y == geocell_north
 			and geocell_has_data
-			and geocell_split_1k == 0):
-			geocell_split_1k = 1500
+			and geocell_split == 0):
+			geocell_split = 1500
+
+	for [x, y] in need_750m_grid:
+		if (x == geocell_east and y == geocell_north
+			and geocell_has_data
+			and geocell_split == 0):
+			geocell_split = 750
 
 	for [x, y] in no_ground_points:
 		if (x == geocell_east and y == geocell_north):
 			geocell_has_data = False
-			geocell_split_1k = 0
+			geocell_split = 0
 
-	if geocell_split_1k > 0:
-		split1k.append([geocell_east, geocell_north, geocell_split_1k])
+	if geocell_split > 0:
+		splitGrid.append([geocell_east, geocell_north, geocell_split])
 		deleteFIDS.append(geocell.GetFID())
 	if geocell_has_data == False:
 		deleteFIDS.append(geocell.GetFID())
@@ -111,7 +125,7 @@ geocell_ds.StartTransaction()
 for fid in deleteFIDS:
 	geocell_lyr.DeleteFeature(fid)
 
-for [x, y, step] in split1k:
-	make_1k_grid(x,y,step)
+for [x, y, step] in splitGrid:
+	split_grid(x,y,step)
 
 geocell_ds.CommitTransaction()

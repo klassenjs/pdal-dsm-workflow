@@ -1,8 +1,11 @@
 {
     "pipeline": [
         {
-            "type": "readers.ept",
-            "filename": "http://localhost:8000/html/pointclouds/mn_agl/ept.json",
+            "type": "readers.tindex",
+            "filename": "./results.3a/laz.tindex.gpkg",
+            "lyr_name": "231000_5052000.agl",
+            "t_srs": "EPSG:26915+5703",
+            "filter_srs": "EPSG:26915",
             "bounds": "([329297,347531], [5341183,5356405])"
         },
         {

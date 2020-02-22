@@ -48,3 +48,33 @@ AGL laz merges classes 8 and 2 into 2
 * 2020-02-12: 3.merge.sh: should setnames on vrt
 
 * 2020-02-13: Clip HAG >= 0
+
+* 2020-02-19:
+  Make 750m tiles for Chisago Co
+
+  Cleaning up AGL LAZ
+
+  1) Making a tileindex on the out LAZ and reading across tile boundaries
+     and writing a count raster clearly shows the tiles (3km spacing, 200m
+     overlap of higher density).
+  2) Using filters.sample(0.001) does not fully clean this up (and is slow)
+     I presume this is because the HAG (Z) doesn't match exactly
+  3) Similarly, pdal merge does not get rid of duplicate points
+  4) Cropping to output bounds appears to work (and when resulting tiles
+     are merged and count band produced, the edges aren't noticable)
+
+	Sorting doesn't help LAZ file size over doing nothing.
+	Nothing: 142MB, morton: 243, morton reverse: 327, X 283, GpsTime: 152
+
+	Removing the HAG >= 0 filter doesn't effect nodata pixels in test area
+
+	(4) works.
+
+	Adding window=10 to DEM and window=2 to DSM/nDSM adds very little time 
+	(~ second over 3 minutes) or memory but significantly cleans up the output.
+
+	Don't add window=2 to DSM/nDSM... this makes up bad data (like bridging a
+	river with trees).  For the DSMs nodata is really nodata.  For the DEMs we
+	can assume a generally smooth ground and this fills most small nodata gaps 
+	which are caused by trees or buildings obscuring the ground.
+	 

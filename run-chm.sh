@@ -1,46 +1,47 @@
 #!/bin/bash
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=5750
-##SBATCH --mem=11500
-##SBATCH --mem=23000
-#SBATCH --open-mode=append
 
-set -euxo pipefail
+set -euo pipefail
 
 src_name="$1"
 res_bn="$2"
 bounds_i="$3"
-bounds_o="$4"
-RESOLUTION="$5"
+bounds_or="$4"
+bounds_ol="$5"
+RESOLUTION="$6"
 
-if [ ! -f "${res_bn}".done ] ; then
-
-		res_dir="$(dirname $res_bn)"
-
-		echo $(date) $(hostname) $src_name $bounds_o
-
-		mkdir -p "${res_dir}"
-
-		echo Using resolution: "${RESOLUTION}"
-
-		touch "${res_bn}".start
-
-		#strace -e trace=open \
-		pdal pipeline all.tindex.pipeline.json \
-			 --readers.tindex.bounds="${bounds_i}" \
-			 --stage.ndsm_writer.resolution=${RESOLUTION} \
-			 --stage.ndsm_writer.bounds="${bounds_o}" \
-			 --stage.ndsm_writer.filename="${res_bn}".ndsm.tif \
-			 --stage.dsm_writer.resolution=${RESOLUTION} \
-			 --stage.dsm_writer.bounds="${bounds_o}" \
-			 --stage.dsm_writer.filename="${res_bn}".dsm.tif \
-			 --stage.dem_writer.resolution=${RESOLUTION} \
-			 --stage.dem_writer.bounds="${bounds_o}" \
-			 --stage.dem_writer.filename="${res_bn}".dem.tif \
-			 --stage.agl_writer.filename="${res_bn}".agl.laz
-
-		echo $(date) $(hostname) $src_name $bounds_o Done.
-		touch "${res_bn}".done
+if [ ! -d "$(dirname "${res_bn}")" ] ; then
+	echo "Output directory missing: $(dirname "${res_bn}")"
+elif [ -f "${res_bn}".done ] ; then
+	echo "Already finished."
 else
-		echo "Already finished."
+	echo $(date) $(hostname) $src_name ${RESOLUTION} $bounds_ol
+
+	touch "${res_bn}".start
+
+	set -x
+	#strace -e trace=open \
+	pdal pipeline all.tindex.pipeline.json \
+		 --readers.tindex.filename="${src_name}" \
+		 --readers.tindex.bounds="${bounds_i}" \
+		 --stage.ndsm_writer.resolution=${RESOLUTION} \
+		 --stage.ndsm_writer.bounds="${bounds_or}" \
+		 --stage.ndsm_writer.filename="${res_bn}".ndsm.tif \
+		 --stage.dsm_writer.resolution=${RESOLUTION} \
+		 --stage.dsm_writer.bounds="${bounds_or}" \
+		 --stage.dsm_writer.filename="${res_bn}".dsm.tif \
+		 --stage.dem_writer.resolution=${RESOLUTION} \
+		 --stage.dem_writer.bounds="${bounds_or}" \
+		 --stage.dem_writer.filename="${res_bn}".dem.tif \
+		 --stage.agl_writer.filename="${res_bn}".agl.las
+
+	pdal pipeline crop.pipeline.json \
+		 --readers.las.filename="${res_bn}".agl.las \
+		 --filters.crop.bounds="${bounds_ol}" \
+		 --writers.las.filename="${res_bn}".agl.laz
+
+	rm "${res_bn}".agl.las
+
+	set +x
+	echo $(date) $(hostname) $src_name ${RESOLUTION} $bounds_ol Done.
+	touch "${res_bn}".done
 fi

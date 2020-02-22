@@ -1,0 +1,17 @@
+{
+    "pipeline": [
+        {
+            "type": "readers.las",
+            "filename": "333000_5343000.agl.las"
+        },
+        {
+            "type": "filters.crop",
+            "bounds": "([333000,336000], [5343000,5346000])"
+        },
+        {
+            "type": "writers.las",
+            "forward": "all",
+            "filename": "333000_5343000.agl.laz"
+        }
+    ]
+}

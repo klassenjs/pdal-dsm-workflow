@@ -7,8 +7,7 @@
         "Calculate Height above Ground",
         "Write nDSM raster",
         "Write nDSM point cloud",
-        "Write DEM raster",
-        "TODO: buffer input tile, clip output to orig tile size"
+        "Write DEM raster"
     ],
     "pipeline": [
         {
@@ -41,7 +40,7 @@
         },
         {
             "type": "filters.range",
-            "limits": "HeightAboveGround[-120:120]"
+            "limits": "HeightAboveGround[0:120]"
         },
         {
             "tag": "dsm_writer",
@@ -50,7 +49,7 @@
             "window_size": 0,
             "output_type": "max,count,stdev",
             "dimension": "Z",
-            "filename": "4342-08-28_b.dsm.tif",
+            "filename": "out.dsm.tif",
             "gdalopts": "COMPRESS=LZW,BIGTIFF=YES",
             "data_type": "float",
             "nodata": -9999
@@ -62,7 +61,7 @@
             "window_size": 0,
             "output_type": "max,count,stdev",
             "dimension": "HeightAboveGround",
-            "filename": "4342-08-28_b.ndsm.tif",
+            "filename": "out.ndsm.tif",
             "gdalopts": "COMPRESS=LZW,BIGTIFF=YES",
             "data_type": "float",
             "nodata": -9999
@@ -82,7 +81,7 @@
             "offset_z": "auto",
             "minor_version": 4,
             "dataformat_id": 1,
-            "filename": "4342-08-28_b.agl.laz"
+            "filename": "out.agl.laz"
         },
         {
             "type": "filters.range",
@@ -92,14 +91,13 @@
             "tag": "dem_writer",
             "type": "writers.gdal",
             "resolution": 0.5,
-            "window_size": 0,
+            "window_size": 10,
             "output_type": "idw,count,stdev",
             "dimension": "OrigZ",
-            "filename": "4342-08-28_b.dem.tif",
+            "filename": "out.dem.tif",
             "gdalopts": "COMPRESS=LZW,BIGTIFF=YES",
             "data_type": "float",
             "nodata": -9999
         }
-
     ]
 }
