@@ -12,10 +12,10 @@
     "pipeline": [
         {
             "type": "readers.tindex",
-            "filename": "src/Elevation/Statewide_Low_Density_Lidar.gpkg",
+            "filename": "tindex.gpkg",
             "lyr_name": "tindex",
-            "t_srs": "EPSG:26915+5703",
-            "filter_srs": "EPSG:26915",
+            "t_srs": "EPSG:6344+5703",
+            "filter_srs": "EPSG:6344",
             "bounds": "([0,1], [10,20])"
         },
         {

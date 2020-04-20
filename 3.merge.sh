@@ -3,11 +3,6 @@
 #SBATCH -c 8
 #SBATCH --mem=0
 
-GDAL=../apps/gdal/v3.0.1-1-ged81e3e326
-PATH="${GDAL}"/bin:$PATH
-export PYTHONPATH="${GDAL}"/lib/python3/dist-packages
-export LD_LIBRARY_PATH="${GDAL}"/lib
-
 MYPATH="$(dirname "$0")"
 
 echo $(date) Building VRT and OVR

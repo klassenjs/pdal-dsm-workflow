@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Script to find jobs that (in results/<res>/tiles) that failed due to out of memory errors
+# Run from inside the tiles directory.
+
+for i in *.start ; do d=${i/start/done}; l=${i/start/log}; if [ ! -f $d ] ; then  tail -n 5 $l | grep Killed && echo $l; fi; done
+
+

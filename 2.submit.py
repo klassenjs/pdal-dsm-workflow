@@ -7,20 +7,25 @@ import sys
 import subprocess
 
 # Location of the source data tileindex
-tindex_name = './src/Elevation/Statewide_Low_Density_Lidar.gpkg'
+tindex_name = sys.argv[1]
+geocell_name = sys.argv[2]
 
 # Meters to buffer the geocell boundary when selecting input data (to avoid edge artifacts)
 geocell_buffer = 30
 
 # output resolution (meters)
-resolution = 3
+resolution = 2
 
 # output directory (needs trailing /)
-output_dir = './results.4/tiles/'
+output_dir = sys.argv[3]+'/'+str(resolution)+'m/tiles/'
 
 # sanity checks
 if not os.path.isfile(tindex_name):
 	print("Input tileindex '"+tindex_name+"' does not exist.")
+	exit(1)
+
+if not os.path.isfile(tindex_name):
+	print("Input geocells '"+geocell_name+"' does not exist.")
 	exit(1)
 
 if not os.path.isdir(output_dir):
@@ -28,7 +33,7 @@ if not os.path.isdir(output_dir):
 	exit(1)
 
 # This the geocell grid to split processing (assumed rectangular in UTM)
-geocell_ds = ogr.Open('./grid.gpkg')
+geocell_ds = ogr.Open(geocell_name)
 geocell_lyr = geocell_ds.GetLayer('grid')
 
 # Submit jobs for each gridcell
