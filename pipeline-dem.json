@@ -1,0 +1,21 @@
+{
+    "pipeline": [
+        {
+            "type": "readers.las",
+            "filename": "in.laz"
+        },
+        {
+            "type": "filters.range",
+            "limits": "Classification[2:2]"
+        },
+        {
+            "type": "writers.gdal",
+            "resolution": 0.5,
+            "window_size": 100,
+            "data_type": "float",
+            "output_type": "idw",
+            "filename": "out.tif"
+        }
+
+    ]
+}
