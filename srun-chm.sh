@@ -13,3 +13,4 @@
 # allocated even though we only use 1 cpu
 
 srun --exclusive ./run-chm.sh $*
+#srun --exclusive ./run-dem.sh $*

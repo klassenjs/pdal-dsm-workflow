@@ -1,0 +1,38 @@
+{
+    "comments": [
+        "Read in the data",
+        "Move Key-Points into Ground Class",
+        "Remove unclassified, noise, and water points",
+        "Write DSM raster",
+        "Calculate Height above Ground",
+        "Write nDSM raster",
+        "Write nDSM point cloud",
+        "Write DEM raster"
+    ],
+    "pipeline": [
+        {
+            "type": "readers.las",
+            "filename": "out.src.laz"
+        },
+        {
+            "type": "filters.assign",
+            "assignment": "Classification[8:8]=2"
+        },
+        {
+            "type": "filters.range",
+            "limits": "Classification[2:2]"
+        },
+        {
+            "tag": "dem_writer",
+            "type": "writers.gdal",
+            "resolution": 0.5,
+            "window_size": 10,
+            "output_type": "idw,count,stdev",
+            "dimension": "Z",
+            "filename": "out.dem.tif",
+            "gdalopts": "COMPRESS=LZW,BIGTIFF=YES",
+            "data_type": "float",
+            "nodata": -9999
+        }
+    ]
+}
