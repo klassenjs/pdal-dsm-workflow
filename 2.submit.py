@@ -85,4 +85,6 @@ for geocell in geocell_lyr:
 						bounds_i, bounds_or, bounds_ol,
 						str(resolution)
 			])
+	else:
+		print("%s done." % geocell_name)
 # end for

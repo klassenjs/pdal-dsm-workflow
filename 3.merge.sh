@@ -29,10 +29,11 @@ $MYPATH/setnames.py dem.vrt "dem (m)" "point count" "stddev point Z"
 $MYPATH/setnames.py dsm.vrt "dsm (m)" "point count" "stddev point Z"
 
 echo $(date) Building GeoTIFFs
+GDAL_OPTIONS="-co BIGTIFF=YES -co COPY_SRC_OVERVIEWS=YES -co TILED=YES -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 -co COMPRESS=LZW -co PREDICTOR=3 -co NUM_THREADS=8"
 
-gdal_translate -co BIGTIFF=YES -co COPY_SRC_OVERVIEWS=YES -co TILED=YES -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 -co COMPRESS=LZW -co NUM_THREADS=8 ndsm.vrt ndsm.tif &
-gdal_translate -co BIGTIFF=YES -co COPY_SRC_OVERVIEWS=YES -co TILED=YES -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 -co COMPRESS=LZW -co NUM_THREADS=8 dem.vrt dem.tif &
-gdal_translate -co BIGTIFF=YES -co COPY_SRC_OVERVIEWS=YES -co TILED=YES -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 -co COMPRESS=LZW -co NUM_THREADS=8 dsm.vrt dsm.tif
+gdal_translate $GDAL_OPTIONS ndsm.vrt ndsm.tif &
+gdal_translate $GDAL_OPTIONS dem.vrt dem.tif &
+gdal_translate $GDAL_OPTIONS dsm.vrt dsm.tif
 wait
 
 echo $(date) Done.

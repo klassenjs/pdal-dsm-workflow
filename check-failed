@@ -6,3 +6,18 @@
 for i in *.start ; do d=${i/start/done}; l=${i/start/log}; if [ ! -f $d ] ; then  tail -n 5 $l | grep Killed && echo $l; fi; done
 
 
+
+
+# Delete empty tiles (no ground points in point view)
+for i in *.dem.tif ; do gdalsrsinfo -o proj4 $i 2>&1 | grep ERROR && rm ${i%%.dem.tif}*; done
+
+
+# Logfile status
+while(true) ; do i
+	date
+	echo -n killed: && tail -n 1 *log | grep killed | wc -l
+	echo -n error: && tail -n 1 *log | grep 'code 1' | wc -l
+	echo -n done: && tail -n 1 *log | grep Done | wc -l
+	sleep 600
+done
+
