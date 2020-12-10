@@ -19,10 +19,16 @@ else
 	touch "${res_bn}".start
 
 	set -x
+
+	# Fetch and crop the data from the tindex outside of PDAL
+	# So we don't get stuck with large tiles in a non-streamable
+	# pipeline (readers.tindex is non-streamable as are filters.smrf, etc)
+	rm -rf "${res_bn}".src.laz.tmp
+	./fetch.py "${src_name}" "${res_bn}".src.laz "${bounds_i}"
+
 	#strace -e trace=open \
-	pdal pipeline all.tindex.pipeline.json \
-		 --readers.tindex.filename="${src_name}" \
-		 --readers.tindex.bounds="${bounds_i}" \
+	pdal pipeline all.laz.pipeline.json \
+		 --readers.las.filename="${res_bn}".src.laz \
 		 --stage.ndsm_writer.resolution=${RESOLUTION} \
 		 --stage.ndsm_writer.bounds="${bounds_or}" \
 		 --stage.ndsm_writer.filename="${res_bn}".ndsm.tif \

@@ -1,0 +1,107 @@
+{
+    "comments": [
+        "Read in the data",
+        "Move Key-Points into Ground Class",
+        "Remove unclassified, noise, and water points",
+        "Write DSM raster",
+        "Calculate Height above Ground",
+        "Write nDSM raster",
+        "Write nDSM point cloud",
+        "Write DEM raster"
+    ],
+    "pipeline": [
+        {
+            "type": "readers.las",
+            "filename": "out.src.laz"
+        },
+        {
+            "type": "filters.ferry",
+            "dimensions": "Classification=>OrigClassification"
+        },
+        {
+            "type": "filters.assign",
+            "assignment": "Classification[8:8]=2"
+        },
+        {
+            "type": "filters.range",
+            "limits": "Classification![7:7]"
+        },
+        {
+            "type": "filters.range",
+            "limits": "ReturnNumber[1:]"
+        },
+        {
+            "type": "filters.range",
+            "limits": "NumberOfReturns[1:]"
+        },
+        {
+            "type": "filters.smrf",
+            "returns": "last,intermediate,only"
+        },
+        {
+            "type": "filters.hag_delaunay",
+						"count": 20
+        },
+        {
+            "type": "filters.range",
+            "limits": "HeightAboveGround[0:120]"
+        },
+        {
+            "tag": "dsm_writer",
+            "type": "writers.gdal",
+            "resolution": 0.5,
+            "window_size": 0,
+            "output_type": "max,count,stdev",
+            "dimension": "Z",
+            "filename": "out.dsm.tif",
+            "gdalopts": "COMPRESS=LZW,BIGTIFF=YES",
+            "data_type": "float",
+            "nodata": -9999
+        },
+        {
+            "tag": "ndsm_writer",
+            "type": "writers.gdal",
+            "resolution": 0.5,
+            "window_size": 0,
+            "output_type": "max,count,stdev",
+            "dimension": "HeightAboveGround",
+            "filename": "out.ndsm.tif",
+            "gdalopts": "COMPRESS=LZW,BIGTIFF=YES",
+            "data_type": "float",
+            "nodata": -9999
+        },
+        {
+            "type": "filters.ferry",
+            "dimensions": "Z=>OrigZ, HeightAboveGround=>Z"
+        },
+        {
+            "tag": "agl_writer",
+            "type": "writers.las",
+            "scale_x": "0.01",
+            "scale_y": "0.01",
+            "scale_z": "0.01",
+            "offset_x": "auto",
+            "offset_y": "auto",
+            "offset_z": "auto",
+            "minor_version": 4,
+            "dataformat_id": 1,
+            "filename": "out.agl.laz"
+        },
+        {
+            "type": "filters.range",
+            "limits": "Classification[2:2]"
+        },
+        {
+            "tag": "dem_writer",
+            "type": "writers.gdal",
+            "resolution": 0.5,
+            "window_size": 10,
+            "output_type": "idw,count,stdev",
+            "dimension": "OrigZ",
+            "filename": "out.dem.tif",
+            "gdalopts": "COMPRESS=LZW,BIGTIFF=YES",
+            "data_type": "float",
+            "nodata": -9999
+        }
+    ]
+}
